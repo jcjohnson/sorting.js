@@ -10,6 +10,15 @@ var sorting = (function() {
   }
 
   function draw_array(canvas, ary, colors) {
+    /*
+     * Draw an array on a canvas.
+     *
+     * Inputs:
+     * - canvas: a DOM canvas object
+     * - ary: An array of numbers to draw
+     * - colors: An array of the same length as ary, whose ith element
+     *   is a string giving the color for the ith element of ary
+     */
     var width_ratio = 2;
     var ctx = canvas.getContext('2d');
 
@@ -62,6 +71,27 @@ var sorting = (function() {
   }
 
   function AnimatedArray(ary, canvas, interval) {
+    /*
+     * An AnimatedArray wraps a pure Javascript array of numbers,
+     * and provides functions to compare and swap elements of the array.
+     * These comparisons and swaps will be visualized on a canvas.
+     *
+     * The AnimatedArray stores two copies of the array and a list of actions;
+     * whenever one of the comparison or swap methods are called, the original
+     * array is immediately updated and the action is added to the action list;
+     * whenever _step() is called (which you should not call manualy), one
+     * action is consumed from the action list, the second copy of the array
+     * is updated if needed, an the array is drawn to the canvas.
+     *
+     * This design lets clients of AnimatedArray use it in clean imperative
+     * code without worrying about callbacks. The downside is that it uses
+     * extra memory.
+     *
+     * Inputs to the constructor:
+     * - ary: Pure Javascript array to wrap
+     * - canvas: DOM canvas object where we will draw
+     * - interval: Time (in milliseconds) between visualizing each step
+     */
     this._ary = ary;
     this._canvas = canvas;
     this._ary_display = [];
@@ -77,19 +107,33 @@ var sorting = (function() {
   }
   
   AnimatedArray.prototype.cancel = function() {
+    /*
+     * Cancel animations for any pending actions for this AnimatedArray.
+     */
     window.clearInterval(this._id);
   }
 
   AnimatedArray.prototype.compare = function(i, j) {
+    /*
+     * Compare the elements at indices i and j.
+     *
+     * this.compare(i, j) > 0 iff this._ary[i] > this._ary[j].
+     */
     this._actions.push(['compare', i, j]);
     return this._ary[i] - this._ary[j];
   }
 
   AnimatedArray.prototype.lessThan = function(i, j) {
+    /*
+     * Check whether this._ary[i] is less than this._ary[j].
+     */
     return this.compare(i, j) < 0;
   }
 
   AnimatedArray.prototype.swap = function(i, j) {
+    /*
+     * Swap this._ary[i] and this._ary[j].
+     */
     this._actions.push(['swap', i, j]);
     var t = this._ary[i];
     this._ary[i] = this._ary[j];
@@ -97,6 +141,12 @@ var sorting = (function() {
   }
 
   AnimatedArray.prototype._step = function() {
+    /*
+     * Consumes one step from the action buffer, using it to update
+     * the display version of the array and the color array; then
+     * draw the display array to the canvas. You should not call this
+     * manually.
+     */
     if (this._actions.length === 0) {
       draw_array(this._canvas, this._ary_display, this._colors);
       return;
@@ -165,7 +215,6 @@ var sorting = (function() {
       sorted = true;
       for (var p = 0; p <= 1; p++) {
         for (var i = p; i + 1 < n; i += 2) {
-          console.log(i);
           if (aa.lessThan(i + 1, i)) {
             aa.swap(i + 1, i);
             sorted = false;
@@ -181,7 +230,6 @@ var sorting = (function() {
     var left = 0;
     var right = n - 1;
     while (left < right) {
-      console.log('top: ', left, right);
       var new_right = right - 1;
       for (var i = left; i + 1 <= right; i++) {
         if (aa.lessThan(i + 1, i)) {
@@ -198,7 +246,6 @@ var sorting = (function() {
         }
       }
       left = new_left;
-      console.log('bottom', left, right);
     }
   }
 
@@ -251,7 +298,8 @@ var sorting = (function() {
 
 
   function perm_to_swaps(perm) {
-    /*  Convert a permutation to a sequence of transpositions.
+    /*
+     *  Convert a permutation to a sequence of transpositions.
      *  
      *  We represent a general permutation as a list of length N
      *  where each element is an integer from 0 to N - 1, with the
