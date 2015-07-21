@@ -25,18 +25,26 @@
             <input id='array-size' class='form-control' type='number' value="50"/>
           </div>
           <div class='form-group'>
-          <label for='#algo-select'>Algorithm</label>
-          <select class='form-control' id='algo-select'>
-            <option value='bubblesort'>Bubble sort</option>
-            <option value='selectionsort'>Selection sort</option>
-            <option value='insertionsort'>Insertion sort</option>
-            <option value='odd_even_sort'>Odd-even sort</option>
-            <option value='cocktail_sort'>Cocktail sort</option>
-            <option value='quicksort'>Quicksort</option>
-            <option value='heapsort'>Heapsort</option>
-            <option value='mergesort'>Merge sort</option>
-            <option value='introsort'>Introsort</option>
-          </select>
+            <label for='#algo-select'>Algorithm</label>
+            <select class='form-control' id='algo-select'>
+              <option value='bubblesort'>Bubble sort</option>
+              <option value='selectionsort'>Selection sort</option>
+              <option value='insertionsort'>Insertion sort</option>
+              <option value='odd_even_sort'>Odd-even sort</option>
+              <option value='cocktail_sort'>Cocktail sort</option>
+              <option value='quicksort'>Quicksort</option>
+              <option value='heapsort'>Heapsort</option>
+              <option value='mergesort'>Merge sort</option>
+              <option value='introsort'>Introsort</option>
+            </select>
+          </div>
+          <div class='form-group'>
+            <label for='#init-select'>Initial array</label>
+            <select class='form-control' id='init-select'>
+              <option value='random'>Random</option>
+              <option value='sorted'>Sorted</option>
+              <option value='reversed'>Reversed</option>
+            </select>
           </div>
           <div class='form-group'>
             <label for='#interval'>Interval (ms)</label>
@@ -90,6 +98,13 @@
           for (var i = 0; i < n; i++) {
             ary.push(Math.random() - 0.5);
           }
+          var init = $('#init-select').val();
+          if (init === 'sorted') {
+            ary.sort(function(a, b) { return a - b; });
+          } else if (init === 'reversed') {
+            ary.sort(function(a, b) {return b - a; });
+          }
+
           var canvas = document.getElementById('main-canvas');
           aa = new sorting.AnimatedArray(ary, canvas, interval);
           sort_fn(aa);
