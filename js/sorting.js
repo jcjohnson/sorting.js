@@ -79,7 +79,7 @@ var sorting = (function() {
      * The AnimatedArray stores two copies of the array and a list of actions;
      * whenever one of the comparison or swap methods are called, the original
      * array is immediately updated and the action is added to the action list;
-     * whenever _step() is called (which you should not call manualy), one
+     * whenever _step() is called (which you should not call manually), one
      * action is consumed from the action list, the second copy of the array
      * is updated if needed, an the array is drawn to the canvas.
      *
@@ -144,7 +144,7 @@ var sorting = (function() {
     /*
      * Consumes one step from the action buffer, using it to update
      * the display version of the array and the color array; then
-     * draw the display array to the canvas. You should not call this
+     * draws the display array to the canvas. You should not call this
      * manually.
      */
     if (this._actions.length === 0) {
@@ -413,7 +413,6 @@ var sorting = (function() {
     }
 
     // First build a heap
-    // var left = Math.floor(n / 2) - 1;
     var start = Math.floor(n / 2) - 1 + left;
     while (start >= left) {
       sift_down(start, right);
