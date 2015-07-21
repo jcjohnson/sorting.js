@@ -1,0 +1,77 @@
+<html>
+  <head>
+    <title>sorting.js</title>
+    <script src='js/lib/jquery-1.11.3.min.js'></script>
+    <script src='js/lib/bootstrap.min.js'></script>
+    <script src='js/sorting.js'></script>
+    <link href='css/lib/bootstrap.min.css' rel='stylesheet'>
+  </head>
+  <body>
+    <div class='container-fluid'>
+      <div class='row'>
+        <div class='col-xs-3'>
+          <div class='form-group'>
+            <label for='#array-size'>Array Size</label>
+            <input id='array-size' class='form-control' type='number' value="50"/>
+          </div>
+          <div class='form-group'>
+          <label for='#algo-select'>Algorithm</label>
+          <select class='form-control' id='algo-select'>
+            <option value='bubblesort'>Bubblesort</option>
+            <option value='selectionsort'>Selection sort</option>
+            <option value='insertionsort'>Insertion sort</option>
+            <option value='odd_even_sort'>Odd-even sort</option>
+            <option value='cocktail_sort'>Cocktail sort</option>
+            <option value='quicksort'>Quicksort</option>
+            <option value='heapsort'>Heapsort</option>
+            <option value='mergesort'>Mergesort</option>
+            <option value='introsort'>Introsort</option>
+          </select>
+          </div>
+          <div class='form-group'>
+            <label for='#interval'>Interval (ms)</label>
+            <input id='interval' class='form-control' type='number' value="20"/>
+          </div>
+          <div class='text-center'>
+            <button class='btn btn-lg btn-primary' id='start-btn'>Start</button>
+          </div>
+        </div>
+        <div class='col-xs-9' id='canvas-div'>
+          <canvas width="800px" height="600px" id="main-canvas">
+        </div>
+      </div>
+    </div>
+    <script>
+      $(function() {
+        var aa = null;
+
+        var resize_canvas = function() {
+          $('#main-canvas').width($('#canvas-div').width());
+        }
+        resize_canvas();
+        $(window).resize(resize_canvas);
+
+        $('#start-btn').click(function() {
+          if (aa !== null) aa.cancel();
+
+          var n = parseInt($('#array-size').val());
+          var interval = parseInt($('#interval').val());
+          var algo = $('#algo-select').val();
+          if (!sorting.hasOwnProperty(algo)) {
+            alert('invalid algorithm');
+            return;
+          }
+          var sort_fn = sorting[algo];
+
+          var ary = [];
+          for (var i = 0; i < n; i++) {
+            ary.push(Math.random() - 0.5);
+          }
+          var canvas = document.getElementById('main-canvas');
+          aa = new sorting.AnimatedArray(ary, canvas, interval);
+          sort_fn(aa);
+        });
+      });
+    </script>
+  </body>
+</html>
