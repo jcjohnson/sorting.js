@@ -485,6 +485,41 @@ var sorting = (function() {
     }
   }
 
+
+  function bitonic_merge(aa, up, left, right) {
+    var n = right - left + 1;
+    var step = Math.floor(n / 2);
+    while (step > 0) {
+      for (var i = 0; i < n; i += step * 2) {
+        var k = 0;
+        for (var j = i; k < step; j++) {
+          var cmp = aa.compare(left + j, left + j + step);
+          if ((up && cmp > 0) || (!up && cmp < 0)) {
+            aa.swap(left + j, left + j + step);
+          }
+          k++;
+        }
+      }
+      step = Math.floor(step / 2);
+    }
+  }
+
+
+  function bitonic_sort(aa) {
+    var n = aa.length();
+    var n2 = 1;
+    while (n2 < n) n2 *= 2;
+    if (n !== n2) throw "Bitonic sort must use a power of 2";
+    for (var s = 2; s <= n2; s *= 2) {
+      for (var i = 0; i < n;) {
+        bitonic_merge(aa, true, i, i + s - 1);
+        bitonic_merge(aa, false, i + s, i + 2 * s - 1);
+        i += s * 2;
+      }
+    }
+  }
+
+
   var algorithms = {
     'bubblesort': bubblesort,
     'selectionsort': selectionsort,
@@ -495,6 +530,7 @@ var sorting = (function() {
     'quicksort': quicksort,
     'mergesort': mergesort,
     'introsort': introsort,
+    'bitonic_sort': bitonic_sort,
   }
 
   function is_pivot_algo(algo) {

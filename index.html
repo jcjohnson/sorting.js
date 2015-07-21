@@ -36,6 +36,7 @@
               <option value='heapsort'>Heapsort</option>
               <option value='mergesort'>Merge sort</option>
               <option value='introsort'>Introsort</option>
+              <option value='bitonic_sort'>Bitonic sort</option>
             </select>
           </div>
           <div class='form-group'>
@@ -111,6 +112,14 @@
           var algo = $('#algo-select').val();
           var pivot_type = $('#pivot-select').val();
           var sort_fn = sorting.get_sort_fn(algo, pivot_type);
+
+          if (algo === 'bitonic_sort') {
+            // Round up to the nearest power of 2
+            var n2 = 1;
+            while (n2 < n) n2 *= 2;
+            $('#array-size').val(n2);
+            n = n2;
+          }
 
           var ary = [];
           for (var i = 0; i < n; i++) {
