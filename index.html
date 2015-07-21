@@ -46,7 +46,7 @@
               <option value='reversed'>Reversed</option>
             </select>
           </div>
-          <div class='form-group'>
+          <div class='form-group' id='pivot-select-div'>
             <label for='#pivot-select'>Pivot choice</label>
             <select class='form-control' id='pivot-select'>
               <option value='random'>Random</option>
@@ -98,6 +98,7 @@
           var algo = $('#algo-select').val();
           var pivot_algo = sorting.is_pivot_algo(algo);
           $('#pivot-select').prop('disabled', !pivot_algo);
+          $('#pivot-select-div').toggleClass('hidden', !pivot_algo);
         }
         update_pivot_select();
         $('#algo-select').change(update_pivot_select);
