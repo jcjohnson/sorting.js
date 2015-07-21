@@ -250,9 +250,47 @@ var sorting = (function() {
   }
 
 
-  function partition(aa, left, right) {
-    // Pick a random pivot and swap it into the rightmost slot
-    var pivot = randint(left, right);
+  function choose_pivot(aa, pivot_type, left, right) {
+    if (typeof(left) === 'undefined') left = 0;
+    if (typeof(right) === 'undefined') right = aa.length() - 1;
+    var pivot = null;
+    if (pivot_type === 'random') {
+      pivot = randint(left, right);
+    } else if (pivot_type === 'first') {
+      pivot = left;
+    } else if (pivot_type === 'last') {
+      pivot = right;
+    } else if (pivot_type === 'middle') {
+      pivot = Math.round((left + right) / 2);
+    } else if (pivot_type === 'median3') {
+      if (left + 1 === right) {
+        // special case to avoid needless comparisons for small arrays
+        pivot = left;
+      } else {
+        // Lots of cases to handle:
+        // LMR, RML -> M
+        // RLM, MLR -> L
+        // LRM, MRL -> R
+        var middle = Math.round((left + right) / 2);
+        var LM = aa.lessThan(left, middle);
+        var MR = aa.lessThan(middle, right);
+        if (LM === MR) {
+          pivot = middle;
+        } else if (LM && !MR) {
+          pivot = aa.lessThan(left, right) ? right : left;
+        } else if (!LM && MR) {
+          pivot = aa.lessThan(left, right) ? left : right;
+        }
+      }
+    } else {
+      throw 'Invalid pivot_type ' + pivot_type;
+    }
+    return pivot;
+  }
+
+
+  function partition(aa, pivot_type, left, right) {
+    var pivot = choose_pivot(aa, pivot_type, left, right);
     aa.swap(pivot, right);
 
     // Partition the array around the pivot.
@@ -271,16 +309,16 @@ var sorting = (function() {
   }
 
 
-  function quicksort(aa, left, right) {
+  function quicksort(aa, pivot_type, left, right) {
     var n = aa.length();
     if (typeof(left) === 'undefined') left = 0;
     if (typeof(right) === 'undefined') right = n - 1;
 
     if (left >= right) return;
 
-    var pivot = partition(aa, left, right);
-    quicksort(aa, left, pivot - 1);
-    quicksort(aa, pivot + 1, right);
+    var pivot = partition(aa, pivot_type, left, right);
+    quicksort(aa, pivot_type, left, pivot - 1);
+    quicksort(aa, pivot_type, pivot + 1, right);
   }
 
 
@@ -428,7 +466,7 @@ var sorting = (function() {
     }
   } 
 
-  function introsort(aa, left, right, maxdepth) {
+  function introsort(aa, pivot_type, left, right, maxdepth) {
     if (typeof(left) === 'undefined') left = 0;
     if (typeof(right) === 'undefined') right = aa.length() - 1;
 
@@ -441,14 +479,13 @@ var sorting = (function() {
     if (maxdepth === 0) {
       heapsort(aa, left, right);
     } else {
-      var pivot = partition(aa, left, right);
-      introsort(aa, left, pivot, maxdepth - 1);
-      introsort(aa, pivot + 1, right, maxdepth - 1);
+      var pivot = partition(aa, pivot_type, left, right);
+      introsort(aa, pivot_type, left, pivot, maxdepth - 1);
+      introsort(aa, pivot_type, pivot + 1, right, maxdepth - 1);
     }
   }
-  
-  return {
-    'AnimatedArray': AnimatedArray,
+
+  var algorithms = {
     'bubblesort': bubblesort,
     'selectionsort': selectionsort,
     'odd_even_sort': odd_even_sort,
@@ -459,5 +496,34 @@ var sorting = (function() {
     'mergesort': mergesort,
     'introsort': introsort,
   }
+
+  function is_pivot_algo(algo) {
+    var pivot_algos = {
+      'quicksort': true,
+      'introsort': true,
+    };
+    return pivot_algos.hasOwnProperty(algo);
+  }
+
+  function get_sort_fn(algo, pivot_type) {
+    if (!algorithms.hasOwnProperty(algo)) {
+      throw 'Invalid algorithm ' + algo;
+    }
+    var sort_fn = algorithms[algo];
+    if (is_pivot_algo(algo)) {
+      return function(aa) { sort_fn(aa, pivot_type); };
+    } else {
+      return sort_fn;
+    }
+  }
+  
+  return {
+    'AnimatedArray': AnimatedArray,
+    'get_sort_fn': get_sort_fn,
+    'is_pivot_algo': is_pivot_algo,
+    'algorithms': algorithms,
+  }
+
+  return _sorting;
 
 })();

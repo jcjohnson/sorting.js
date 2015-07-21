@@ -47,6 +47,16 @@
             </select>
           </div>
           <div class='form-group'>
+            <label for='#pivot-select'>Pivot choice</label>
+            <select class='form-control' id='pivot-select'>
+              <option value='random'>Random</option>
+              <option value='first'>First</option>
+              <option value='middle'>Middle</option>
+              <option value='last'>Last</option>
+              <option value='median3'>Median of 3</option>
+            </select>
+          </div>
+          <div class='form-group'>
             <label for='#interval'>Interval (ms)</label>
             <input id='interval' class='form-control' type='number' value="20"/>
           </div>
@@ -76,11 +86,21 @@
       $(function() {
         var aa = null;
 
+        // Make the canvas fit the available space
         var resize_canvas = function() {
           $('#main-canvas').width($('#canvas-div').width());
         }
         resize_canvas();
         $(window).resize(resize_canvas);
+
+        // Disable / enable the pivot select as needed
+        var update_pivot_select = function() {
+          var algo = $('#algo-select').val();
+          var pivot_algo = sorting.is_pivot_algo(algo);
+          $('#pivot-select').prop('disabled', !pivot_algo);
+        }
+        update_pivot_select();
+        $('#algo-select').change(update_pivot_select);
 
         $('#start-btn').click(function() {
           if (aa !== null) aa.cancel();
@@ -88,11 +108,8 @@
           var n = parseInt($('#array-size').val());
           var interval = parseInt($('#interval').val());
           var algo = $('#algo-select').val();
-          if (!sorting.hasOwnProperty(algo)) {
-            alert('invalid algorithm');
-            return;
-          }
-          var sort_fn = sorting[algo];
+          var pivot_type = $('#pivot-select').val();
+          var sort_fn = sorting.get_sort_fn(algo, pivot_type);
 
           var ary = [];
           for (var i = 0; i < n; i++) {
