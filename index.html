@@ -5,6 +5,16 @@
     <script src='js/lib/bootstrap.min.js'></script>
     <script src='js/sorting.js'></script>
     <link href='css/lib/bootstrap.min.css' rel='stylesheet'>
+    <style>
+      .compare {
+        font-weight: bold;
+        color: #00F;
+      }
+      .swap {
+        font-weight: bold;
+        color: #F00;
+      }
+    </style>
   </head>
   <body>
     <div class='container-fluid'>
@@ -32,6 +42,11 @@
             <label for='#interval'>Interval (ms)</label>
             <input id='interval' class='form-control' type='number' value="20"/>
           </div>
+          <p class='text-muted'>
+            Comparisons are <span class='compare'>blue</span>,
+            <br>
+            swaps are <span class='swap'>red</span>.
+          </p>
           <div class='text-center'>
             <button class='btn btn-lg btn-primary' id='start-btn'>Start</button>
           </div>
