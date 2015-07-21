@@ -505,7 +505,7 @@ var sorting = (function() {
   }
 
 
-  function bitonic_sort(aa) {
+  function bitonic_mergesort(aa) {
     var n = aa.length();
     var n2 = 1;
     while (n2 < n) n2 *= 2;
@@ -530,7 +530,7 @@ var sorting = (function() {
     'quicksort': quicksort,
     'mergesort': mergesort,
     'introsort': introsort,
-    'bitonic_sort': bitonic_sort,
+    'bitonic_mergesort': bitonic_mergesort,
   }
 
   function is_pivot_algo(algo) {
